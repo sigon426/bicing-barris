@@ -16,14 +16,25 @@
 
   <script>
 
-    function updateStations(layer) {
-      console.log('update'+layer);
+    function updateBarris(layer){
       var buscar = $("#buscar");
       buscar.click(function(){
         var cbarri = $( "#text_input" ).val();
-        //var cbarri = '08'
-        console.log('clik '+cbarri);
-        var myquery= "SELECT s.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+        // change the query for the first layer
+        var myquery= "SELECT b.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri+"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+        var subLayerOptions = {
+          sql: myquery,
+          cartocss: "#bcn_barri_shp{polygon-fill: red;}"
+        }
+        layer.set(subLayerOptions);
+      })
+    };
+    function updateStations(layer) {
+      var buscar = $("#buscar");
+      buscar.click(function(){
+        var cbarri = $( "#text_input" ).val();
+        console.log('click '+cbarri);
+        var myquery= "SELECT s.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
    
         var subLayerOptions = {
           sql: myquery,
@@ -32,6 +43,7 @@
 
         layer.set(subLayerOptions);
         layer.infowindow.set('template', $('#infowindow_template').html());
+        
       })//click
     };//update
 
@@ -50,16 +62,15 @@
 
       // stations
       var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
-      var myquery11= "SELECT * FROM station"
-      var myquery12= "SELECT s.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
- 
+      var myquery11= "SELECT * FROM station limit 10"
+
       var subLayer1Options = {
-        sql: myquery12,
+        sql: myquery11,
         cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
       }
       // barrios
-      var barris_URL= "http://ageo.cartodb.com/api/v2/viz/6d539e36-a5df-11e3-886c-0edbca4b5057/viz.json"
-      var myquery21= "SELECT * FROM bcn_barri_shp"
+      var barris_URL= "http://ageo.cartodb.com/api/v2/viz/c7d1edd2-a64c-11e3-bf22-0e73339ffa50/viz.json"
+      var myquery21= "SELECT * FROM barris_bcn"
       var myquery22= "SELECT b.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
  
       
@@ -73,7 +84,8 @@
       cartodb.createLayer(map, barris_URL)
         .addTo(map)
         .on('done', function(layer) {
-          layer.getSubLayer(0).set(subLayer2Options);
+          updateBarris(layer.getSubLayer(0));
+          //layer.getSubLayer(0).set(subLayer2Options);
           //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
 
         }).on('error', function() {
