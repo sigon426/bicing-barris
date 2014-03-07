@@ -1,0 +1,113 @@
+<html>
+<head>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+  <![endif]-->
+  <style>
+    html, body {width:100%; height:100%; padding: 0; margin: 0;}
+    #cartodb-map { width: 100%; height:100%; background: black;}
+    .input{position: absolute;top: 9%;right: 50%;padding: 0;}
+
+  </style>
+
+  <script>
+    var map;
+    function init(){
+      // initiate leaflet map
+      map = new L.Map('cartodb-map', { 
+        center: [41.39,2.19],
+        zoom: 13
+      })
+      //define la capabase y la añade al mapa
+      L.tileLayer('http://tile.stamen.com/toner-background/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+/*   
+      L.tileLayer('https://dnv9my2eseobd.cloudfront.net/v3/cartodb.map-4xtxp73f/{z}/{x}/{y}.png', {
+        attribution: 'Mapbox <a href="http://mapbox.com/about/maps" target="_blank">Terms &amp; Feedback</a>'
+      }).addTo(map);
+*/
+      // stations
+      var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
+      var myquery0= "SELECT * FROM station"
+      var myquery1= "SELECT s.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+ 
+      var subLayer1Options = {
+        sql: myquery1,
+        cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
+      }
+      // barrios
+      var barris_URL= "http://ageo.cartodb.com/api/v2/viz/6d539e36-a5df-11e3-886c-0edbca4b5057/viz.json"
+      var myquery2= "SELECT b.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+ 
+      
+      // change the query for the first layer
+      var subLayer2Options = {
+        sql: myquery2,
+        cartocss: "#bcn_barri_shp{polygon-fill: #B10026;}"
+      }
+
+
+      cartodb.createLayer(map, barris_URL)
+        .addTo(map)
+        .on('done', function(layer) {
+          layer.getSubLayer(0).set(subLayer2Options);
+          //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
+
+        }).on('error', function() {
+          //log the error
+        });
+      cartodb.createLayer(map, station_URL)
+        .addTo(map)
+        .on('done', function(layer) {
+          layer.getSubLayer(0).set(subLayer1Options);
+          layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
+        }).on('error', function() {
+          //log the error
+        });
+      
+
+
+    } //fin init
+   
+  </script>
+  <script type="text/javascript">
+    $(function(){
+        $("#buscar").click(function(){
+            var barri = $( "#text_input" ).val();
+            showMeTheData(barri);
+            console.log('barri selected: '+barri+2)
+        });
+    });
+
+  </script>
+</head>
+
+<body onload="init()">
+  <div id='cartodb-map'></div>
+  <div class="input">
+    <input id="text_input" placeholder="cbarri [01 to 44]"><button id="buscar">buscar</button>
+  </div>
+  <!-- 'infowindow template'-->
+  <script type="infowindow/html" id="infowindow_template">
+    <div class="cartodb-popup">
+      <a href="#close" class="cartodb-popup-close-button close">x</a>
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-header">
+            <h2>id: {{content.data.id}}</h2>
+          </div>
+          <div class="cartodb-popup-content">
+            <p>Libres: {{content.data.bikes}} of {{content.data.slots}}</p>
+            <p>status: {{content.data.status}}</p>
+            <p>str: {{content.data.street}}</p>
+         </div>
+       </div>
+       <div class="cartodb-popup-tip-container"></div>
+    </div>
+  </script>
+</body>
+</html>
