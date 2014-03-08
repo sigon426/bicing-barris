@@ -1,5 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+  <meta charset="utf-8">
+</head>
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   
@@ -24,7 +28,7 @@
         var myquery= "SELECT b.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri+"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
         var subLayerOptions = {
           sql: myquery,
-          cartocss: "#bcn_barri_shp{polygon-fill: red;}"
+          cartocss: "#barris_bcn{polygon-fill: #FF6600;polygon-opacity: 0.2;line-color: #FFF;line-width: 1;line-opacity: 1;}"
         }
         layer.set(subLayerOptions);
       })
@@ -35,6 +39,7 @@
         var cbarri = $( "#text_input" ).val();
         console.log('click '+cbarri);
         var myquery= "SELECT s.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+        var myquery2= "SELECT s.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
    
         var subLayerOptions = {
           sql: myquery,
@@ -62,7 +67,7 @@
 
       // stations
       var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
-      var myquery11= "SELECT * FROM station limit 10"
+      var myquery11= "SELECT * FROM station"
 
       var subLayer1Options = {
         sql: myquery11,
@@ -114,7 +119,7 @@
 <body>
   <div id='cartodb-map'></div>
   <div class="input">
-    <input id="text_input" placeholder="cbarri [01 to 44]"><button id="buscar">buscar</button>
+    <input id="text_input" placeholder="cbarri [01 to 73]"><button id="buscar">buscar</button>
   </div>
   <!-- 'infowindow template'-->
   <script type="infowindow/html" id="infowindow_template">
