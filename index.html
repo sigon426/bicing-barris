@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="utf-8">
@@ -33,7 +33,7 @@
         layer.set(subLayerOptions);
       })
     };
-    function updateStations(map,layer) {
+    function updateStations(map,layer, sublayer) {
       var buscar = $("#buscar");
       buscar.click(function(){
         var cbarri = $( "#text_input" ).val();
@@ -44,15 +44,17 @@
           sql: myquery,
           cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
         }
-        layer.show();
-        layer.set(subLayerOptions);
-        layer.infowindow.set('template', $('#infowindow_template').html());
-        // get bounds
+        
+        sublayer.set(subLayerOptions);
+
+        sublayer.infowindow.set('template', $('#infowindow_template').html());
+        // get bounds and fix map
         var sql = new cartodb.SQL({ user: 'ageo' });
         sql.getBounds(myquery).done(function(bounds) {
             console.log('Bounds'+bounds);
             map.fitBounds(bounds)
         });
+        layer.show();
                 
       })//click
     };//update
@@ -67,9 +69,10 @@
         zoom: 11
       })
       //define la capabase y la añade al mapa
+      /*
       L.tileLayer('http://tile.stamen.com/toner-background/{z}/{x}/{y}.png', {
           attribution: 'Stamen'
-        }).addTo(map);
+        }).addTo(map);*/
 
       // stations layer options
       var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
@@ -105,9 +108,9 @@
       cartodb.createLayer(map, station_URL)
         .addTo(map)
         .on('done', function(layer) {
-          updateStations(map, layer.getSubLayer(0))
+          updateStations(map, layer, layer.getSubLayer(0))
           layer.getSubLayer(0).set(subLayer1Options);
-          layer.getSubLayer(0).hide();
+          layer.hide();
           //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
         }).on('error', function() {
           //log the error
