@@ -33,13 +33,12 @@
         layer.set(subLayerOptions);
       })
     };
-    function updateStations(layer) {
+    function updateStations(map,layer) {
       var buscar = $("#buscar");
       buscar.click(function(){
         var cbarri = $( "#text_input" ).val();
         console.log('click '+cbarri);
         var myquery= "SELECT s.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
-        var myquery2= "SELECT s.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri +"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
    
         var subLayerOptions = {
           sql: myquery,
@@ -48,24 +47,31 @@
         layer.show();
         layer.set(subLayerOptions);
         layer.infowindow.set('template', $('#infowindow_template').html());
-        
+        // get bounds
+        var sql = new cartodb.SQL({ user: 'ageo' });
+        sql.getBounds(myquery).done(function(bounds) {
+            console.log('Bounds'+bounds);
+            map.fitBounds(bounds)
+        });
+                
       })//click
     };//update
 
 
     var map;
     function init(){
+
       // initiate leaflet map
       map = new L.Map('cartodb-map', { 
         center: [41.39,2.19],
-        zoom: 13
+        zoom: 11
       })
       //define la capabase y la añade al mapa
       L.tileLayer('http://tile.stamen.com/toner-background/{z}/{x}/{y}.png', {
           attribution: 'Stamen'
         }).addTo(map);
 
-      // stations
+      // stations layer options
       var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
       var myquery11= "SELECT * FROM station"
 
@@ -73,24 +79,23 @@
         sql: myquery11,
         cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
       }
-      // barrios
+      
+      // barris layer options
       var barris_URL= "http://ageo.cartodb.com/api/v2/viz/c7d1edd2-a64c-11e3-bf22-0e73339ffa50/viz.json"
       var myquery21= "SELECT * FROM barris_bcn"
       var myquery22= "SELECT b.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
  
-      
-      // change the query for the first layer
       var subLayer2Options = {
         sql: myquery21,
-        cartocss: "#bcn_barri_shp{polygon-fill: #B10026;}"
+        cartocss: "#barris_bcn{polygon-opacity: 0.8;line-color: #FFF;  line-width: 1;line-opacity: 1;}#barris_bcn [ area <= 14284129.2813] {polygon-fill: #BD0026;}#barris_bcn [ area <= 1658916.10473] {polygon-fill: #F03B20;}#barris_bcn [ area <= 1104975.72248] {polygon-fill: #FD8D3C;}#barris_bcn [ area <= 788279.568474] {polygon-fill: #FECC5C;}#barris_bcn [ area <= 559836.379515] {polygon-fill: #FFFFB2;}"
       }
 
-      // barris layer
+      // create barris layer
       cartodb.createLayer(map, barris_URL)
         .addTo(map)
         .on('done', function(layer) {
           updateBarris(layer.getSubLayer(0));
-          //layer.getSubLayer(0).set(subLayer2Options);
+          layer.getSubLayer(0).set(subLayer2Options);
           //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
 
         }).on('error', function() {
@@ -100,7 +105,7 @@
       cartodb.createLayer(map, station_URL)
         .addTo(map)
         .on('done', function(layer) {
-          updateStations(layer.getSubLayer(0))
+          updateStations(map, layer.getSubLayer(0))
           layer.getSubLayer(0).set(subLayer1Options);
           layer.getSubLayer(0).hide();
           //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
