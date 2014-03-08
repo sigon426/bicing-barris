@@ -69,10 +69,10 @@
         zoom: 11
       })
       //define la capabase y la añade al mapa
-      /*
+      
       L.tileLayer('http://tile.stamen.com/toner-background/{z}/{x}/{y}.png', {
           attribution: 'Stamen'
-        }).addTo(map);*/
+        }).addTo(map);
 
       // stations layer options
       var station_URL = "http://ageo.cartodb.com/api/v2/viz/92b759f6-a5df-11e3-852e-0e10bcd91c2b/viz.json"
@@ -139,6 +139,7 @@
             <h2>id: {{content.data.id}}</h2>
           </div>
           <div class="cartodb-popup-content">
+            <img style ="width: 115px;" src="https://www.bicing.cat/sites/all/themes/bicing/images/bicis_bicing.jpg"</img>
             <p>Libres: {{content.data.bikes}} of {{content.data.slots}}</p>
             <p>status: {{content.data.status}}</p>
             <p>str: {{content.data.street}}</p>
