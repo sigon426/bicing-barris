@@ -45,7 +45,7 @@
           sql: myquery,
           cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"
         }
-
+        layer.show();
         layer.set(subLayerOptions);
         layer.infowindow.set('template', $('#infowindow_template').html());
         
@@ -102,6 +102,7 @@
         .on('done', function(layer) {
           updateStations(layer.getSubLayer(0))
           layer.getSubLayer(0).set(subLayer1Options);
+          layer.getSubLayer(0).hide();
           //layer.getSubLayer(0).infowindow.set('template', $('#infowindow_template').html());
         }).on('error', function() {
           //log the error
