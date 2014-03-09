@@ -99,7 +99,7 @@
       }
       var stationBarrisURL ="http://ageo.cartodb.com/api/v2/viz/8855947c-a76b-11e3-9ab2-0e10bcd91c2b/viz.json"
 
-      // create barris layer
+      // create layer w/ 2 sublayers (barris & stations)
       cartodb.createLayer(map, stationBarrisURL)
         .addTo(map)
         .on('done', function(layer) {
