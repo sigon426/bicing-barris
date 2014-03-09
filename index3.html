@@ -1,8 +1,8 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
-  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 </head>
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -22,6 +22,7 @@
 
     function updateMap(layer){
       var buscar = $("#buscar");
+
       buscar.click(function(){
         var cbarri = $( "#text_input" ).val();
         layer.setInteraction(true)
@@ -30,7 +31,7 @@
         var myquery0= "SELECT b.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri+"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
         var subLayer0Options = {
           sql: myquery0,
-          cartocss: "#barris_bcn{polygon-fill: #FF6600;polygon-opacity: 0.2;line-color: #FFF;line-width: 1;line-opacity: 1;}"
+          cartocss: "#barris_bcn{polygon-fill: #0f3b82;polygon-opacity: 0.2;line-color: #FFF;line-width: 1;line-opacity: 1;}"
         }
         var barris = layer.getSubLayer(0)
         barris.set(subLayer0Options);
@@ -41,20 +42,22 @@
    
         var subLayer1Options = {
           sql: myquery1,
-          cartocss: "#station{marker-fill: #109DCD; marker-width: 5; marker-line-color: white; marker-line-width: 0;}"/*,
+          cartocss: "#station{marker-fill: #FFCC00; marker-width: 5; marker-line-color: white; marker-line-width: 0;}",
           interactivity: 'cartodb_id, id, street, status, slots, bikes',
-          infowindow: true */
+          infowindow: true 
         }
         var stations = layer.getSubLayer(1)
         stations.set(subLayer1Options);
         //stations.show();
-
+        console.log('sublayercount: '+layer.getSubLayerCount());
         stations.setInteraction(true)
         // 1#try
-        stations.infowindow.set('template', $('#infowindow_template').html());
+        //stations.infowindow.set('template', $('#infowindow_template').html());
         // 2#try
-        /*cdb.vis.Vis.addInfowindow(map, stations, ['cartodb_id, id, street, status, slots, bikes'])*/
+        //cdb.vis.Vis.addInfowindow(map, stations, ['cartodb_id, id, street, status, slots, bikes'])
 
+        // Create a CartoDB popup
+        //var popup = new L.CartoDBPopup();
         
         // get bounds and fix map view to the query
         var sql = new cartodb.SQL({ user: 'ageo' });
@@ -82,11 +85,11 @@
 
       // barris layer options (cartocss == choropleth)
       var barris_URL  = "http://ageo.cartodb.com/api/v2/viz/c7d1edd2-a64c-11e3-bf22-0e73339ffa50/viz.json"
-      var myquery21= "SELECT * FROM barris_bcn"
-      var myquery22= "SELECT b.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+      var myquery01= "SELECT * FROM barris_bcn"
+      var myquery02= "SELECT b.* FROM bcn_barri_shp b, station s WHERE b.cbarri = '07' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
  
-      var subLayer2Options = {
-        sql: myquery21,
+      var subLayer0Options = {
+        sql: myquery01,
         cartocss: "#barris_bcn{polygon-opacity: 0.8;line-color: #FFF;  line-width: 1;line-opacity: 1;}#barris_bcn [ area <= 14284129.2813] {polygon-fill: #BD0026;}#barris_bcn [ area <= 1658916.10473] {polygon-fill: #F03B20;}#barris_bcn [ area <= 1104975.72248] {polygon-fill: #FD8D3C;}#barris_bcn [ area <= 788279.568474] {polygon-fill: #FECC5C;}#barris_bcn [ area <= 559836.379515] {polygon-fill: #FFFFB2;}"
       }
 
@@ -100,16 +103,16 @@
       var stationBarrisURL ="http://ageo.cartodb.com/api/v2/viz/8855947c-a76b-11e3-9ab2-0e10bcd91c2b/viz.json"
 
       // create layer
-      cartodb.createLayer(map, station_URL)
+      cartodb.createLayer(map, stationBarrisURL)
         .addTo(map)
         .on('done', function(layer) {
           updateMap(layer);
-          layer.getSubLayer(0).set(subLayer2Options);
-          layer.createSubLayer(subLayer1Options);
-          layer.setInteraction(false)
+          layer.getSubLayer(0).set(subLayer0Options);//barris
+          layer.getSubLayer(1).set(subLayer1Options);//stations
+          //layer.setInteraction(true)
 
-          //layer.getSubLayer(1).hide()
-          //layer.getSubLayer(1).infowindow.set('template', $('#infowindow_template').html());
+          //layer.getSubLayer(0).setInteraction(false)
+          layer.getSubLayer(1).infowindow.set('template', $('#infowindow_template').html());
 
         }).on('error', function() {
           //log the error
