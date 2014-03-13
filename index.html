@@ -25,7 +25,7 @@
       buscar.click(function(){
         var cbarri = $( "#text_input" ).val();
         // change the query for the first layer
-        var myquery= "SELECT b.* FROM barris_bcn b, station s WHERE b.cbarri = '"+cbarri+"' AND st_intersects(b.the_geom_webmercator, s.the_geom_webmercator)"
+        var myquery= "SELECT * FROM barris_bcn"
         var subLayerOptions = {
           sql: myquery,
           cartocss: "#barris_bcn{polygon-fill: #FF6600;polygon-opacity: 0.2;line-color: #FFF;line-width: 1;line-opacity: 1;}"
