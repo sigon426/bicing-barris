@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+        <title>Where is my car?</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+</head>
+<body>
+</body>
+	<p id="texto"></p>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript">
+	    $(document).ready(function () {
+	        $.ajax({
+	            type: "GET",
+	            url: "http://wservice.viabicing.cat/getstations.php?v=1",
+	            cache: false,
+	            dataType: "xml",
+	            success: function(xml) {
+	            	alert(xml)
+	                $(xml).find('bicing_stations').each(function(){
+						$(this).find("lat").each(function(){
+                        	var name = $(this).text();
+                        	alert(name);
+                    	});
+	                });
+	            },
+				error: function() {
+					alert("An error occurred while processing XML file.");
+				}
+	        });
+	    });
+	    //Code Starts
+	    /*
+		$(document).ready(function(){
+		  $("#dvContent").append("<ul></ul>");
+		  $.ajax({
+		  	type: "GET",
+		    url: "http://wservice.viabicing.cat/getstations.php?v=1",
+		    dataType: "xml",
+		    success: function(xml){
+			    $(xml).find('Book').each(function(){
+			      var sTitle = $(this).find('Title').text();
+			      var sPublisher = $(this).find('Publisher').text();
+			      $("<li></li>").html(sTitle + ", " + sPublisher).appendTo("#dvContent ul");
+			    });
+			},
+			error: function() {
+				alert("An error occurred while processing XML file.");
+			}
+		  });
+		});*/
+
+		//Code Ends
+
+	</script>
+</html>
+<!-- 
+
+	http://opendata.bcn.cat/opendata/cataleg/TRANSPORT/bicing/#
+	http://wservice.viabicing.cat/getstations.php?v=1
+<bicing_stations>
+	<updatetime>
+		<![CDATA[ 1394058126 ]]>
+	</updatetime>
+<station>
+	<id>1</id>
+	<lat>41.3979520</lat>
+	<long>2.18004200</long>
+	<street>
+		<![CDATA[ Gran Via Corts Catalanes ]]>
+	</street>
+	<height>21</height>
+	<streetNumber>760</streetNumber>
+	<nearbyStationList>24,369,387,426</nearbyStationList>
+	<status>OPN</status>
+	<slots>0</slots>
+	<bikes>24</bikes>
+</station>
+<station>
+	<id>2</id>
+ -->
